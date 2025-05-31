@@ -1,29 +1,46 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:image_picker/image_picker.dart';
 import 'imagen_service.dart';
 
 class ImagenViewModel extends ChangeNotifier {
-  bool _subiendo = false;
-  bool get subiendo => _subiendo;
-
   final ImagenService _service = ImagenService();
 
-  Future<void> subirImagen(File imagen) async {
-    _subiendo = true;
-    notifyListeners();
+  List<String> imagenes = [];
+  bool cargando = false;
+  String? mensaje;
 
-    final resultado = await compute<File, String?>(_subirEnSegundoPlano, imagen);
+  // Método para seleccionar y subir imagen
+  Future<void> seleccionarYSubirImagen() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-    _subiendo = false;
-    notifyListeners();
-
-    if (resultado != null) {
-      // Puedes guardar o mostrar la URL recibida
-      print("Imagen subida con éxito: $resultado");
+    if (pickedFile != null) {
+      final archivo = File(pickedFile.path);
+      try {
+        final response = await _service.subirImagen(archivo);
+        mensaje = response['mensaje'] ?? 'Imagen subida';
+      } catch (e) {
+        mensaje = 'Error al subir imagen';
+      }
+      notifyListeners();
+    } else {
+      mensaje = 'No se seleccionó ninguna imagen';
+      notifyListeners();
     }
   }
 
-  static Future<String?> _subirEnSegundoPlano(File imagen) async {
-    return await ImagenService().subirImagen(imagen);
+  Future<void> cargarImagenes() async {
+    cargando = true;
+    notifyListeners();
+
+    try {
+      imagenes = await _service.obtenerImagenes();
+    } catch (e) {
+      imagenes = [];
+    }
+
+    cargando = false;
+    notifyListeners();
   }
 }

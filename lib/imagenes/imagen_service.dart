@@ -1,20 +1,33 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class ImagenService {
-  Future<String?> subirImagen(File imagen) async {
-    final uri = Uri.parse('http://10.0.2.2:3000/api/imagenes/subir'); // Usa 10.0.2.2 en emulador Android
-    final request = http.MultipartRequest('POST', uri);
-    request.files.add(await http.MultipartFile.fromPath('imagen', imagen.path));
+  final String baseUrl = 'http://10.0.2.2:3000'; // tu backend
 
-    final response = await request.send();
+  Future<List<String>> obtenerImagenes() async {
+    final response = await http.get(Uri.parse('$baseUrl/imagenes'));
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((img) => img['ruta'] as String).toList();
+    } else {
+      throw Exception('Error al obtener imágenes');
+    }
+  }
+
+  // Nuevo método para subir imagen
+  Future<Map<String, dynamic>> subirImagen(File archivo) async {
+    final uri = Uri.parse('$baseUrl/api/imagenes/upload');
+    final request = http.MultipartRequest('POST', uri)
+      ..files.add(await http.MultipartFile.fromPath('imagen', archivo.path));
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
 
     if (response.statusCode == 200) {
-      final body = await response.stream.bytesToString();
-      return body; // o decodifica si necesitas la URL
+      return json.decode(response.body) as Map<String, dynamic>;
     } else {
-      return null;
+      throw Exception('Error al subir imagen');
     }
   }
 }
-

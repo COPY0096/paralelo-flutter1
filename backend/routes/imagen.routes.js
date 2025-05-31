@@ -5,19 +5,16 @@ const { subirImagen } = require('../controllers/imagenController');
 
 const router = express.Router();
 
-// Configuración de almacenamiento con multer
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+
+
+router.get('/imagenes', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM imagenes ORDER BY fecha_subida DESC');
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al obtener imágenes' });
   }
 });
-
-const upload = multer({ storage });
-
-router.post('/subir', upload.single('imagen'), subirImagen);
 
 module.exports = router;

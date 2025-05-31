@@ -9,6 +9,7 @@ import 'home/home_view.dart';
 import 'mantenimientos/mantenimiento_view.dart';
 import 'imagenes/imagen_view.dart';
 import 'imagenes/imagen_view_model.dart';
+import 'imagenes/galeria_view.dart';
 
 
 void main() {
@@ -44,8 +45,9 @@ class MyApp extends StatelessWidget {
             '/login': (_) => const LoginView(),
             '/home': (_) => const HomeView(),
             '/productos': (_) => const ProductosView(),
-             '/mantenimientos': (_) => const MantenimientoView(),
-             '/imagenes': (_) => const ImagenView(),
+            '/mantenimientos': (_) => const MantenimientoView(),
+            '/imagenes': (_) => const ImagenView(),
+            '/galeria': (context) => const GaleriaView(),
           },
         );
       },
