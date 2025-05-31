@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'viewmodels/login_view_model.dart';
-import 'viewmodels/productos_view_model.dart';
-import 'views/login_view.dart';
-import 'views/productos_view.dart';
+import 'login/login_view_model.dart';
+import 'productos/productos_view_model.dart';
+import 'auth/auth_view_model.dart'; 
+import 'login/login_view.dart';
+import 'home/home_view.dart'; 
 
 void main() {
   runApp(
@@ -11,6 +12,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => LoginViewModel()),
         ChangeNotifierProvider(create: (_) => ProductosViewModel()),
+        ChangeNotifierProvider(create: (_) => AuthViewModel()), // NUEVO
       ],
       child: const MyApp(),
     ),
@@ -27,7 +29,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
       ),
-      home: const ProductosView(), // Puedes cambiar esto a LoginView si quieres primero el login
+      home: Consumer<AuthViewModel>(
+        builder: (context, auth, _) {
+          return auth.isLoggedIn ? const HomeView() : const LoginView();
+        },
+      ),
     );
   }
 }
