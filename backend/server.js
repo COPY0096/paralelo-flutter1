@@ -1,18 +1,24 @@
 const express = require('express');
-const app = express();
 const cors = require('cors');
-const authRoutes = require('./routes/authRoutes'); 
-const productoRoutes = require('./routes/producto.routes'); 
-const usuarioRoutes = require('./routes/usuario.routes');
+const app = express();
 
+const imagenRoutes = require('./routes/imagen.routes');
+const usuarioRoutes = require('./routes/usuario.routes');
+const productoRoutes = require('./routes/producto.routes');
+const authRoutes = require('./routes/authRoutes');
+
+// Middleware
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static('uploads')); // Servir imágenes
 
-app.use('/api/auth', authRoutes); 
-app.use('/api/productos', productoRoutes);
+// Rutas
+app.use('/api/imagenes', imagenRoutes);
 app.use('/api/usuarios', usuarioRoutes);
+app.use('/api/productos', productoRoutes);
+app.use('/api/auth', authRoutes);
 
 const PORT = 3000;
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en puerto ${PORT}`);
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

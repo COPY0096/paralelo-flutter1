@@ -7,6 +7,8 @@ import 'productos/productos_view_model.dart';
 import 'login/login_view.dart';
 import 'home/home_view.dart';
 import 'mantenimientos/mantenimiento_view.dart';
+import 'imagenes/imagen_view.dart';
+import 'imagenes/imagen_view_model.dart';
 
 
 void main() {
@@ -16,6 +18,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => AuthViewModel()),
         ChangeNotifierProvider(create: (_) => LoginViewModel()),
         ChangeNotifierProvider(create: (_) => ProductosViewModel()),
+        ChangeNotifierProvider(create: (_) => ImagenViewModel()),
       ],
       child: const MyApp(),
     ),
@@ -42,7 +45,7 @@ class MyApp extends StatelessWidget {
             '/home': (_) => const HomeView(),
             '/productos': (_) => const ProductosView(),
              '/mantenimientos': (_) => const MantenimientoView(),
-            // '/imagenes': (_) => const ImagenesView(),
+             '/imagenes': (_) => const ImagenView(),
           },
         );
       },
