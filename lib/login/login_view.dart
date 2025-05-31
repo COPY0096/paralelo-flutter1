@@ -1,43 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../auth/auth_view_model.dart';
+import '../home/home_view.dart';
+import 'login_view_model.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
-
   @override
   State<LoginView> createState() => _LoginViewState();
 }
 
 class _LoginViewState extends State<LoginView> {
-  final _userController = TextEditingController();
-  final _passController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final LoginViewModel loginViewModel = LoginViewModel();
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthViewModel>(context, listen: false);
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(title: Text("Login")),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(
-              controller: _userController,
-              decoration: const InputDecoration(labelText: 'Usuario'),
-            ),
-            TextField(
-              controller: _passController,
-              decoration: const InputDecoration(labelText: 'Contraseña'),
-              obscureText: true,
-            ),
-            const SizedBox(height: 20),
+            TextField(controller: _usernameController, decoration: InputDecoration(labelText: "Usuario")),
+            TextField(controller: _passwordController, obscureText: true, decoration: InputDecoration(labelText: "Contraseña")),
+            SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                auth.login(_userController.text, _passController.text);
+              onPressed: () async {
+                final username = _usernameController.text;
+                final password = _passwordController.text;
+
+                bool success = await loginViewModel.login(username, password);
+
+                if (success) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomeView()),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Credenciales inválidas")));
+                }
               },
-              child: const Text('Iniciar sesión'),
+              child: Text("Iniciar sesión"),
             ),
           ],
         ),

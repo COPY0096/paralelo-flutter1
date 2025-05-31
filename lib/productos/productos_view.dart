@@ -13,21 +13,25 @@ class _ProductosViewState extends State<ProductosView> {
   @override
   void initState() {
     super.initState();
-    context.read<ProductosViewModel>().cargarProductos();
+    // Llama a fetchProductos una vez que el widget se haya inicializado
+    Future.microtask(() {
+      Provider.of<ProductosViewModel>(context, listen: false).fetchProductos();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<ProductosViewModel>();
+    final viewModel = Provider.of<ProductosViewModel>(context);
+    final productos = viewModel.productos;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Lista de Productos')),
-      body: viewModel.cargando
+      body: productos.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
-              itemCount: viewModel.productos.length,
+              itemCount: productos.length,
               itemBuilder: (context, index) {
-                final producto = viewModel.productos[index];
+                final producto = productos[index];
                 return ListTile(
                   title: Text(producto.nombre),
                   subtitle: Text('Precio: \$${producto.precio.toStringAsFixed(2)}'),

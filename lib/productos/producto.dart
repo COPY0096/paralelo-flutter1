@@ -1,13 +1,13 @@
-// lib/models/producto.dart
-
 class Producto {
   final int id;
   final String nombre;
+  final String descripcion;
   final double precio;
 
   Producto({
     required this.id,
     required this.nombre,
+    required this.descripcion,
     required this.precio,
   });
 
@@ -15,8 +15,8 @@ class Producto {
     return Producto(
       id: json['id'],
       nombre: json['nombre'],
-      precio: (json['precio'] as num).toDouble(),
+      descripcion: json['descripcion'],
+      precio: double.tryParse(json['precio'].toString()) ?? 0.0, // <-- CORRECCIÓN AQUÍ
     );
   }
 }
-

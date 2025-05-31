@@ -3,23 +3,12 @@ import 'producto.dart';
 import 'producto_service.dart';
 
 class ProductosViewModel extends ChangeNotifier {
-  List<Producto> productos = [];
-  bool cargando = false;
-
   final ProductoService _productoService = ProductoService();
+  List<Producto> _productos = [];
+  List<Producto> get productos => _productos;
 
-  Future<void> cargarProductos() async {
-    cargando = true;
-    notifyListeners();
-
-    try {
-      productos = await _productoService.fetchProductos();
-    } catch (e) {
-      // Manejo de error
-      print('Error al cargar productos: $e');
-    }
-
-    cargando = false;
+  Future<void> fetchProductos() async {
+    _productos = await _productoService.fetchProductos();
     notifyListeners();
   }
 }
