@@ -1,9 +1,7 @@
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 
 
-const mysql = require('mysql2');
+
+const mysql = require('mysql2/promise');
 
 const connection = mysql.createConnection({
   host: 'localhost',
@@ -11,32 +9,22 @@ const connection = mysql.createConnection({
   password: '0096',
   database: 'flutter1'
 });
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // carpeta donde guardas las imágenes
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // nombre único
-  }
-});
 
-const upload = multer({ storage });
 
-const subirImagen = async (req, res) => {
+
+
+exports.subirImagen = async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ mensaje: 'No se subió archivo' });
-
-    const imagenUrl = `/uploads/${req.file.filename}`;
-
-    // Guarda info en la base de datos
-    const sql = 'INSERT INTO imagenes (ruta) VALUES (?)';
-    await pool.query(sql, [imagenUrl]);
-
-    return res.status(200).json({ mensaje: 'Imagen subida con éxito', imagenUrl });
+    if (!req.file) {
+      return res.status(400).json({ mensaje: 'No se subió ninguna imagen' });
+    }
+    const rutaImagen = `/uploads/${req.file.filename}`;
+    await db.query('INSERT INTO imagenes (ruta) VALUES (?)', [rutaImagen]);
+    res.json({ mensaje: 'Imagen subida correctamente', ruta: rutaImagen });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ mensaje: 'Error al subir imagen' });
+    res.status(500).json({ mensaje: 'Error al subir imagen' });
   }
 };
 
-module.exports = { upload, subirImagen };
+
