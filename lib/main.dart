@@ -6,6 +6,8 @@ import 'login/login_view_model.dart';
 import 'productos/productos_view_model.dart';
 import 'login/login_view.dart';
 import 'home/home_view.dart';
+import 'mantenimientos/mantenimiento_view.dart';
+
 
 void main() {
   runApp(
@@ -39,7 +41,7 @@ class MyApp extends StatelessWidget {
             '/login': (_) => const LoginView(),
             '/home': (_) => const HomeView(),
             '/productos': (_) => const ProductosView(),
-            // '/mantenimientos': (_) => const MantenimientoView(),
+             '/mantenimientos': (_) => const MantenimientoView(),
             // '/imagenes': (_) => const ImagenesView(),
           },
         );

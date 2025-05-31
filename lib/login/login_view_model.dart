@@ -10,7 +10,7 @@ class LoginViewModel extends ChangeNotifier {
 
   // Nuevo método login que retorna Future<bool>
   Future<bool> login(String username, String password) async {
-    //final url = Uri.parse('http://localhost:3000/api/auth/login');
+    //final url = Uri.parse('http://10.0.2.2:3000/api/auth/login');
     final url = Uri.parse('http://10.0.2.2:3000/api/auth/login');
 
     final response = await http.post(

@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 
 class AuthViewModel extends ChangeNotifier {
-  bool _isLoggedIn = false;
-  bool get isLoggedIn => _isLoggedIn;
-
-  void login() {
-    _isLoggedIn = true;
-    notifyListeners();
-  }
+  bool isLoggedIn = true;
 
   void logout() {
-    _isLoggedIn = false;
+    // Limpiar tokens...
+    isLoggedIn = false;
     notifyListeners();
   }
 }
+
