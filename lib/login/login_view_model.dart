@@ -25,6 +25,7 @@ class LoginViewModel extends ChangeNotifier {
         _message = '¡Login exitoso!';
         notifyListeners();
         return true;
+        
       }
     }
     _message = 'Credenciales inválidas';
@@ -36,7 +37,8 @@ class LoginViewModel extends ChangeNotifier {
   Future<void> loginAndNavigate(BuildContext context, String username, String password) async {
     final success = await login(username, password);
     if (success) {
-      context.read<AuthViewModel>().login();
+      context.read<AuthViewModel>().login(username);
+      
       Navigator.pushReplacementNamed(context, '/home');
     }
   }
