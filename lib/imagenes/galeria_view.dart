@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'imagen_view_model.dart';
 
-
 class GaleriaView extends StatelessWidget {
   const GaleriaView({super.key});
 
@@ -20,7 +19,9 @@ class GaleriaView extends StatelessWidget {
           ? Center(child: CircularProgressIndicator())
           : GridView.builder(
               padding: EdgeInsets.all(8),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+              ),
               itemCount: viewModel.imagenes.length,
               itemBuilder: (context, index) {
                 return Card(
