@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_paralelo_1/articulos/api_screen.dart';
 import 'package:provider/provider.dart';
 import '../auth/auth_view_model.dart';
+
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -41,6 +43,17 @@ class HomeView extends StatelessWidget {
                   child: const Text('Imágenes'),
                 ),
                 const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ApiScreen()),
+                    );
+                  },
+                  child: Text('API'),
+                ),
+
+
                 ElevatedButton(
                   onPressed: () {
                     Provider.of<AuthViewModel>(context, listen: false).logout();
