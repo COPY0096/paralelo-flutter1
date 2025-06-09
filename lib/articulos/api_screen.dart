@@ -108,8 +108,11 @@ class _ApiScreenState extends State<ApiScreen> {
                       itemBuilder: (context, index) {
                         final art = articulos[index];
                         return ListTile(
-                          title: Text('${art.marca} ${art.modelo}'),
-                          subtitle: Text('Cantidad: ${art.cantidad} | Precio: ${art.precio} RD\$'),
+                          title: Text(art.nombre),
+                          subtitle: Text(
+                            'Marca: ${art.marca}, Modelo: ${art.modelo}\n'
+                            'Cantidad: ${art.cantidad} | Precio: ${art.precio.toStringAsFixed(2)} RD\$',
+                          ),
                         );
                       },
                     ),
