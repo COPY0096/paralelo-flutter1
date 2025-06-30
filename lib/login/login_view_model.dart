@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import '../auth/auth_view_model.dart';
+import '../models/user_model.dart';
 
 class LoginViewModel extends ChangeNotifier {
   String _message = '';
   String get message => _message;
 
-  // Nuevo método login que retorna Future<bool>
-  Future<bool> login(String username, String password) async {
-    //final url = Uri.parse('http://10.0.2.2:3000/api/auth/login');
+  /// Retorna un [UserModel] si el login fue exitoso, o null en caso contrario.
+  Future<UserModel?> login(String username, String password) async {
     final url = Uri.parse('http://10.0.2.2:3000/api/auth/login');
 
     final response = await http.post(
@@ -21,25 +21,127 @@ class LoginViewModel extends ChangeNotifier {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      if (data['success']) {
+
+      if (data['success'] == true) {
+        // El backend devuelve el objeto en la clave 'user'
+        final userJson = data['user'] as Map<String, dynamic>;
+        final user = UserModel.fromJson(userJson);
         _message = '¡Login exitoso!';
         notifyListeners();
-        return true;
-        
+        return user;
       }
     }
+
     _message = 'Credenciales inválidas';
     notifyListeners();
-    return false;
+    return null;
   }
 
-  // Método para usar en la vista, con navegación y AuthViewModel
+  /// Realiza login y navega a la pantalla '/home' si es exitoso.
   Future<void> loginAndNavigate(BuildContext context, String username, String password) async {
-    final success = await login(username, password);
-    if (success) {
-      context.read<AuthViewModel>().login(username);
-      
+    final user = await login(username, password);
+    if (user != null) {
+      // Guardar usuario completo en AuthViewModel
+      context.read<AuthViewModel>().login(user);
       Navigator.pushReplacementNamed(context, '/home');
     }
   }
 }
+
+
+
+//v2
+// import 'dart:convert';
+// import 'package:flutter/material.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:provider/provider.dart';
+// import '../auth/auth_view_model.dart';
+// import '../models/user_model.dart';
+
+// class LoginViewModel extends ChangeNotifier {
+//   String _message = '';
+//   String get message => _message;
+
+//   // Cambiado: Retorna un UserModel si el login fue exitoso
+//   Future<UserModel?> login(String username, String password) async {
+//     final url = Uri.parse('http://10.0.2.2:3000/api/auth/login');
+
+//     final response = await http.post(
+//       url,
+//       headers: {'Content-Type': 'application/json'},
+//       body: jsonEncode({'username': username, 'password': password}),
+//     );
+
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body);
+
+//       if (data['success']) {
+//         final user = UserModel.fromJson(data['usuario']);
+//         _message = '¡Login exitoso!';
+//         notifyListeners();
+//         return user;
+//       }
+//     }
+
+//     _message = 'Credenciales inválidas';
+//     notifyListeners();
+//     return null;
+//   }
+
+//   // Método de uso en la vista
+//   Future<void> loginAndNavigate(BuildContext context, String username, String password) async {
+//     final user = await login(username, password);
+//     if (user != null) {
+//       context.read<AuthViewModel>().login(user);
+//       Navigator.pushReplacementNamed(context, '/home');
+//     }
+//   }
+// }
+
+//original code snippet
+// import 'dart:convert';
+// import 'package:flutter/material.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:provider/provider.dart';
+// import '../auth/auth_view_model.dart';
+
+
+// class LoginViewModel extends ChangeNotifier {
+//   String _message = '';
+//   String get message => _message;
+
+//   // Nuevo método login que retorna Future<bool>
+//   Future<bool> login(String username, String password) async {
+//     //final url = Uri.parse('http://10.0.2.2:3000/api/auth/login');
+//     final url = Uri.parse('http://10.0.2.2:3000/api/auth/login');
+
+//     final response = await http.post(
+//       url,
+//       headers: {'Content-Type': 'application/json'},
+//       body: jsonEncode({'username': username, 'password': password}),
+//     );
+
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body);
+//       if (data['success']) {
+//         _message = '¡Login exitoso!';
+//         notifyListeners();
+//         return true;
+        
+//       }
+//     }
+//     _message = 'Credenciales inválidas';
+//     notifyListeners();
+//     return false;
+//   }
+
+//   // Método para usar en la vista, con navegación y AuthViewModel
+//   Future<void> loginAndNavigate(BuildContext context, String username, String password) async {
+//     final success = await login(username, password);
+//     if (success) {
+//       context.read<AuthViewModel>().login(username);
+      
+//       Navigator.pushReplacementNamed(context, '/home');
+//     }
+//   }
+// }

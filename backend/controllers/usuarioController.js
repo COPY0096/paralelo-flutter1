@@ -16,21 +16,21 @@ const getUsuarios = (req, res) => {
 };
 
 const createUsuario = (req, res) => {
-  const { username, password } = req.body;
-  const sql = 'INSERT INTO usuarios (username, password) VALUES (?, ?)';
-  connection.query(sql, [username, password], (err, result) => {
-    if (err) return res.status(500).json({ error: 'Error al crear usuario' });
-    res.json({ id: result.insertId, username, password });
+  const { username, nombre, correo, rol, password } = req.body;
+  const sql = 'INSERT INTO usuarios (username, nombre, correo, rol, password) VALUES (?, ?, ?, ?, ?)';
+  connection.query(sql, [username, nombre, correo, rol, password], (err, result) => {
+    if (err) return res.status(500).json({ error: 'Error al crear usuario', err });
+    res.json({ id: result.insertId, username, nombre, correo, rol });
   });
 };
 
 const updateUsuario = (req, res) => {
   const { id } = req.params;
-  const { username, password } = req.body;
-  const sql = 'UPDATE usuarios SET username = ?, password = ? WHERE id = ?';
-  connection.query(sql, [username, password, id], (err) => {
+  const { username, nombre, correo, rol, password } = req.body;
+  const sql = 'UPDATE usuarios SET username = ?, nombre = ?, correo = ?, rol = ?, password = ? WHERE id = ?';
+  connection.query(sql, [username, nombre, correo, rol, password, id], (err) => {
     if (err) return res.status(500).json({ error: 'Error al actualizar usuario' });
-    res.json({ id, username, password });
+    res.json({ id, username, nombre, correo, rol });
   });
 };
 
@@ -49,4 +49,3 @@ module.exports = {
   updateUsuario,
   deleteUsuario
 };
-

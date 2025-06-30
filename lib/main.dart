@@ -10,6 +10,9 @@ import 'mantenimientos/mantenimiento_view.dart';
 import 'imagenes/imagen_view.dart';
 import 'imagenes/imagen_view_model.dart';
 import 'imagenes/galeria_view.dart';
+import 'usuarios/perfil_view.dart';
+import 'theme/theme.dart';
+
 
 
 void main() {
@@ -36,10 +39,9 @@ class MyApp extends StatelessWidget {
         final authViewModel = Provider.of<AuthViewModel>(context);
         final bool isLoggedIn = authViewModel.isLoggedIn ?? false;
         return MaterialApp(
-          title: 'Flutter App',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-          ),
+          title: 'SmartControl App',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme, // ✅ Tema personalizado aplicado
           initialRoute: isLoggedIn ? '/home' : '/login',
           routes: {
             '/login': (_) => const LoginView(),
@@ -47,7 +49,8 @@ class MyApp extends StatelessWidget {
             '/productos': (_) => const ProductosView(),
             '/mantenimientos': (_) => const MantenimientoView(),
             '/imagenes': (_) => const ImagenView(),
-            '/galeria': (context) => const GaleriaView(),
+            '/galeria': (_) => const GaleriaView(),
+            '/perfil': (_) => const PerfilView(),
           },
         );
       },
