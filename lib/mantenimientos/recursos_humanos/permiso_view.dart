@@ -1,6 +1,7 @@
 // lib/mantenimientos/recursos_humanos/permiso_view.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter_paralelo_1/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'permiso_model.dart';
 import 'permiso_view_model.dart';
@@ -25,7 +26,9 @@ class _PermisoViewState extends State<PermisoView> {
   }
 
   void _mostrarFormulario({Permiso? permiso}) {
+    final localizations = AppLocalizations.of(context)!;
     final isEdit = permiso != null;
+
     _usuarioController.text = permiso?.usuarioId.toString() ?? '';
     _tipoController.text = permiso?.tipo ?? '';
     _fechaInicio = permiso?.fechaInicio ?? DateTime.now();
@@ -34,18 +37,21 @@ class _PermisoViewState extends State<PermisoView> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text(isEdit ? 'Editar Permiso' : 'Nuevo Permiso'),
+        title: Text(isEdit
+            ? localizations.editPermission
+            : localizations.newPermission),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: _usuarioController,
-              decoration: const InputDecoration(labelText: 'ID Usuario'),
+              decoration: InputDecoration(labelText: localizations.userId),
               keyboardType: TextInputType.number,
             ),
             TextField(
               controller: _tipoController,
-              decoration: const InputDecoration(labelText: 'Tipo de Permiso'),
+              decoration:
+                  InputDecoration(labelText: localizations.permissionType),
             ),
             const SizedBox(height: 10),
             TextButton(
@@ -58,7 +64,8 @@ class _PermisoViewState extends State<PermisoView> {
                 );
                 if (picked != null) setState(() => _fechaInicio = picked);
               },
-              child: Text('Inicio: ${_fechaInicio.toLocal().toString().split(' ')[0]}'),
+              child: Text(
+                  '${localizations.start}: ${_fechaInicio.toLocal().toString().split(' ')[0]}'),
             ),
             TextButton(
               onPressed: () async {
@@ -70,12 +77,16 @@ class _PermisoViewState extends State<PermisoView> {
                 );
                 if (picked != null) setState(() => _fechaFin = picked);
               },
-              child: Text('Fin: ${_fechaFin.toLocal().toString().split(' ')[0]}'),
+              child: Text(
+                  '${localizations.end}: ${_fechaFin.toLocal().toString().split(' ')[0]}'),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(localizations.cancel),
+          ),
           ElevatedButton(
             onPressed: () async {
               final usuarioId = int.tryParse(_usuarioController.text.trim());
@@ -98,7 +109,7 @@ class _PermisoViewState extends State<PermisoView> {
 
               Navigator.pop(context);
             },
-            child: Text(isEdit ? 'Actualizar' : 'Guardar'),
+            child: Text(isEdit ? localizations.update : localizations.save),
           )
         ],
       ),
@@ -108,9 +119,10 @@ class _PermisoViewState extends State<PermisoView> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<PermisoViewModel>();
+    final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Permisos')),
+      appBar: AppBar(title: Text(localizations.permissions)),
       body: vm.isLoading
           ? const Center(child: CircularProgressIndicator())
           : vm.error.isNotEmpty

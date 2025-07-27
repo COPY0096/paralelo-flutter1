@@ -1,9 +1,11 @@
 // lib/mantenimientos/recursos_humanos/vacaciones_view.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter_paralelo_1/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'vacaciones_model.dart';
 import 'vacaciones_view_model.dart';
+
 
 class VacacionesView extends StatefulWidget {
   const VacacionesView({super.key});
@@ -25,6 +27,8 @@ class _VacacionesViewState extends State<VacacionesView> {
 
   void _mostrarFormulario({Vacaciones? vac}) {
     final isEdit = vac != null;
+    final localizations = AppLocalizations.of(context)!;
+
     _usuarioController.text = vac?.usuarioId.toString() ?? '';
     _fechaInicio = vac?.fechaInicio ?? DateTime.now();
     _fechaFin = vac?.fechaFin ?? DateTime.now();
@@ -32,44 +36,72 @@ class _VacacionesViewState extends State<VacacionesView> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text(isEdit ? 'Editar Vacaciones' : 'Nuevas Vacaciones'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _usuarioController,
-              decoration: const InputDecoration(labelText: 'ID Usuario'),
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 10),
-            TextButton(
-              onPressed: () async {
-                final picked = await showDatePicker(
-                  context: context,
-                  initialDate: _fechaInicio,
-                  firstDate: DateTime(2020),
-                  lastDate: DateTime(2100),
-                );
-                if (picked != null) setState(() => _fechaInicio = picked);
-              },
-              child: Text('Inicio: ${_fechaInicio.toLocal().toString().split(' ')[0]}'),
-            ),
-            TextButton(
-              onPressed: () async {
-                final picked = await showDatePicker(
-                  context: context,
-                  initialDate: _fechaFin,
-                  firstDate: DateTime(2020),
-                  lastDate: DateTime(2100),
-                );
-                if (picked != null) setState(() => _fechaFin = picked);
-              },
-              child: Text('Fin: ${_fechaFin.toLocal().toString().split(' ')[0]}'),
-            ),
-          ],
+        title: Text(isEdit
+            ? localizations.editVacation
+            : localizations.newVacation),
+        content: SingleChildScrollView(
+          child: Column(
+            children: [
+              TextField(
+                controller: _usuarioController,
+                decoration: InputDecoration(
+                  labelText: localizations.userId,
+                ),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Text("${localizations.startDate}: "),
+                  TextButton(
+                    onPressed: () async {
+                      final picked = await showDatePicker(
+                        context: context,
+                        initialDate: _fechaInicio,
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime(2100),
+                      );
+                      if (picked != null) {
+                        setState(() => _fechaInicio = picked);
+                      }
+                    },
+                    child: Text(
+                      _fechaInicio.toLocal().toString().split(' ')[0],
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Text("${localizations.endDate}: "),
+                  TextButton(
+                    onPressed: () async {
+                      final picked = await showDatePicker(
+                        context: context,
+                        initialDate: _fechaFin,
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime(2100),
+                      );
+                      if (picked != null) {
+                        setState(() => _fechaFin = picked);
+                      }
+                    },
+                    child: Text(
+                      _fechaFin.toLocal().toString().split(' ')[0],
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(localizations.cancel),
+          ),
           ElevatedButton(
             onPressed: () async {
               final usuarioId = int.tryParse(_usuarioController.text.trim());
@@ -91,8 +123,8 @@ class _VacacionesViewState extends State<VacacionesView> {
 
               Navigator.pop(context);
             },
-            child: Text(isEdit ? 'Actualizar' : 'Guardar'),
-          )
+            child: Text(isEdit ? localizations.update : localizations.save),
+          ),
         ],
       ),
     );
@@ -101,39 +133,43 @@ class _VacacionesViewState extends State<VacacionesView> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<VacacionesViewModel>();
+    final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Vacaciones')),
-      body: vm.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : vm.error.isNotEmpty
-              ? Center(child: Text('Error: ${vm.error}'))
-              : ListView.builder(
-                  itemCount: vm.lista.length,
-                  itemBuilder: (_, index) {
-                    final vac = vm.lista[index];
-                    return Card(
-                      child: ListTile(
-                        title: Text('Usuario ID: ${vac.usuarioId}'),
-                        subtitle: Text(
-                            'Del ${vac.fechaInicio.toLocal().toString().split(' ')[0]} al ${vac.fechaFin.toLocal().toString().split(' ')[0]}'),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit),
-                              onPressed: () => _mostrarFormulario(vac: vac),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete),
-                              onPressed: () => vm.eliminarVacaciones(vac.id!),
-                            ),
-                          ],
+      appBar: AppBar(title: Text(localizations.vacations)),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: vm.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : vm.error.isNotEmpty
+                ? Center(child: Text('Error: ${vm.error}'))
+                : ListView.builder(
+                    itemCount: vm.lista.length,
+                    itemBuilder: (_, index) {
+                      final vac = vm.lista[index];
+                      return Card(
+                        child: ListTile(
+                          title: Text('Usuario ID: ${vac.usuarioId}'),
+                          subtitle: Text(
+                              'Del ${vac.fechaInicio.toLocal().toString().split(' ')[0]} al ${vac.fechaFin.toLocal().toString().split(' ')[0]}'),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () => _mostrarFormulario(vac: vac),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () => vm.eliminarVacaciones(vac.id!),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                ),
+                      );
+                    },
+                  ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _mostrarFormulario(),
         child: const Icon(Icons.add),

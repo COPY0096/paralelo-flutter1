@@ -2,16 +2,19 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_paralelo_1/articulos/api_screen.dart';
+import 'package:flutter_paralelo_1/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+//import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import '../auth/auth_view_model.dart';
-import '../usuarios/perfil_view.dart';
-import '../mantenimientos/recursos_humanos/recursos_humanos_view.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Consumer<AuthViewModel>(
       builder: (context, auth, child) {
         if (!auth.isLoggedIn) {
@@ -22,73 +25,72 @@ class HomeView extends StatelessWidget {
         }
 
         final isAdmin = auth.user?.rol == 'admin';
+        final nombreUsuario = auth.user?.nombre ?? auth.user?.username ?? '';
 
         return Scaffold(
-          appBar: AppBar(title: const Text('Menú Principal')),
+          appBar: AppBar(
+            title: Text(localizations.home),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.logout),
+                tooltip: localizations.logout,
+                onPressed: () => auth.logout(),
+              ),
+            ],
+          ),
           body: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: 32.0),
+              padding: const EdgeInsets.symmetric(vertical: 32.0, horizontal: 24),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Bienvenido, ${auth.user?.nombre ?? auth.user?.username ?? ''}!',
-                    style: Theme.of(context).textTheme.titleLarge,
+                    '${localizations.home}, $nombreUsuario!',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                    textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
 
-                  ElevatedButton(
-                    onPressed: () => Navigator.pushNamed(context, '/perfil'),
-                    child: const Text('Mi Perfil'),
+                  _buildButton(
+                    context,
+                    icon: Icons.person,
+                    label: localizations.profileTitle,
+                    route: '/perfil',
                   ),
-                  const SizedBox(height: 16),
-
-                  ElevatedButton(
-                    onPressed: () => Navigator.pushNamed(context, '/productos'),
-                    child: const Text('Ver productos'),
+                  _buildButton(
+                    context,
+                    icon: Icons.inventory,
+                    label: localizations.products,
+                    route: '/productos',
                   ),
-                  const SizedBox(height: 16),
-
-                  ElevatedButton(
-                    onPressed: () =>
-                        Navigator.pushNamed(context, '/mantenimientos'),
-                    child: const Text('Mantenimientos'),
+                  _buildButton(
+                    context,
+                    icon: Icons.build,
+                    label: localizations.users,
+                    route: '/mantenimientos',
                   ),
-                  const SizedBox(height: 16),
-
-                  ElevatedButton(
-                    onPressed: () =>
-                        Navigator.pushNamed(context, '/imagenes'),
-                    child: const Text('Imágenes'),
+                  _buildButton(
+                    context,
+                    icon: Icons.image,
+                    label: 'Imágenes',
+                    route: '/imagenes',
                   ),
-                  const SizedBox(height: 16),
-
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const ApiScreen()),
-                      );
-                    },
-                    child: const Text('API'),
-                  ),
-                  const SizedBox(height: 16),
-
-                  if (isAdmin) ...[
-                    ElevatedButton.icon(
-                      onPressed: () => Navigator.pushNamed(
-                          context, '/recursos-humanos'),
-                      icon: const Icon(Icons.business_center),
-                      label: const Text('Recursos Humanos'),
+                  _buildCustomButton(
+                    context,
+                    icon: Icons.api,
+                    label: 'API',
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ApiScreen()),
                     ),
-                    const SizedBox(height: 16),
-                  ],
-
-                  ElevatedButton(
-                    onPressed: () => auth.logout(),
-                    child: const Text('Cerrar sesión'),
                   ),
+                  if (isAdmin)
+                    _buildButton(
+                      context,
+                      icon: Icons.business_center,
+                      label: 'Recursos Humanos',
+                      route: '/recursos-humanos',
+                    ),
                 ],
               ),
             ),
@@ -97,155 +99,40 @@ class HomeView extends StatelessWidget {
       },
     );
   }
+
+  Widget _buildButton(BuildContext context,
+      {required IconData icon, required String label, required String route}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: ElevatedButton.icon(
+        icon: Icon(icon),
+        label: Text(label),
+        onPressed: () => Navigator.pushNamed(context, route),
+        style: ElevatedButton.styleFrom(
+          minimumSize: const Size.fromHeight(50),
+          textStyle: const TextStyle(fontSize: 16),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCustomButton(BuildContext context,
+      {required IconData icon,
+      required String label,
+      required VoidCallback onPressed}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: ElevatedButton.icon(
+        icon: Icon(icon),
+        label: Text(label),
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          minimumSize: const Size.fromHeight(50),
+          textStyle: const TextStyle(fontSize: 16),
+        ),
+      ),
+    );
+  }
 }
 
 
-//v2
-// // home_view.dart
-// import 'package:flutter/material.dart';
-// import 'package:flutter_paralelo_1/articulos/api_screen.dart';
-// import 'package:provider/provider.dart';
-// import '../auth/auth_view_model.dart';
-// import '../usuarios/perfil_view.dart'; // ← importa tu perfil
-
-// class HomeView extends StatelessWidget {
-//   const HomeView({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Consumer<AuthViewModel>(
-//       builder: (context, auth, child) {
-//         if (!auth.isLoggedIn) {
-//           WidgetsBinding.instance.addPostFrameCallback((_) {
-//             Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
-//           });
-//         }
-
-//         return Scaffold(
-//           appBar: AppBar(title: const Text('Menú Principal')),
-//           body: Center(
-//             child: Column(
-//               mainAxisAlignment: MainAxisAlignment.center,
-//               children: [
-//                 Text('Bienvenido, ${auth.user?.nombre ?? auth.user?.username ?? ''}!'),
-//                 const SizedBox(height: 16),
-
-//                 ElevatedButton(
-//                   onPressed: () => Navigator.pushNamed(context, '/perfil'),
-//                   child: const Text('Mi Perfil'),
-//                 ),
-//                 const SizedBox(height: 16),
-
-//                 ElevatedButton(
-//                   onPressed: () => Navigator.pushNamed(context, '/productos'),
-//                   child: const Text('Ver productos'),
-//                 ),
-//                 const SizedBox(height: 16),
-
-//                 ElevatedButton(
-//                   onPressed: () => Navigator.pushNamed(context, '/mantenimientos'),
-//                   child: const Text('Mantenimientos'),
-//                 ),
-//                 const SizedBox(height: 16),
-
-//                 ElevatedButton(
-//                   onPressed: () => Navigator.pushNamed(context, '/imagenes'),
-//                   child: const Text('Imágenes'),
-//                 ),
-//                 const SizedBox(height: 16),
-
-//                 ElevatedButton(
-//                   onPressed: () {
-//                     Navigator.push(
-//                       context,
-//                       MaterialPageRoute(builder: (context) => const ApiScreen()),
-//                     );
-//                   },
-//                   child: const Text('API'),
-//                 ),
-//                 const SizedBox(height: 16),
-
-//                 ElevatedButton(
-//                   onPressed: () => auth.logout(),
-//                   child: const Text('Cerrar sesión'),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         );
-//       },
-//     );
-//   }
-// }
-
-//original
-// import 'package:flutter/material.dart';
-// import 'package:flutter_paralelo_1/articulos/api_screen.dart';
-// import 'package:provider/provider.dart';
-// import '../auth/auth_view_model.dart';
-
-
-// class HomeView extends StatelessWidget {
-//   const HomeView({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Consumer<AuthViewModel>(
-//       builder: (context, auth, child) {
-//         if (!auth.isLoggedIn) {
-//           // Navegar a login y limpiar pila
-//           WidgetsBinding.instance.addPostFrameCallback((_) {
-//             Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
-//           });
-//         }
-
-//         return Scaffold(
-//           appBar: AppBar(title: const Text('Menú Principal')),
-//           body: Center(
-//             child: Column(
-//               mainAxisAlignment: MainAxisAlignment.center,
-//               children: [
-//                 Text(
-//                   'Bienvenido, ${auth.username}!',
-//                   style: const TextStyle(fontSize: 24),
-//                 ),
-//                 ElevatedButton(
-//                   onPressed: () => Navigator.pushNamed(context, '/productos'),
-//                   child: const Text('Ver productos'),
-//                 ),
-//                 const SizedBox(height: 16),
-//                 ElevatedButton(
-//                   onPressed: () => Navigator.pushNamed(context, '/mantenimientos'),
-//                   child: const Text('Mantenimientos'),
-//                 ),
-//                 const SizedBox(height: 16),
-//                 ElevatedButton(
-//                   onPressed: () => Navigator.pushNamed(context, '/imagenes'),
-//                   child: const Text('Imágenes'),
-//                 ),
-//                 const SizedBox(height: 16),
-//                 ElevatedButton(
-//                   onPressed: () {
-//                     Navigator.push(
-//                       context,
-//                       MaterialPageRoute(builder: (context) => const ApiScreen()),
-//                     );
-//                   },
-//                   child: Text('API'),
-//                 ),
-
-
-//                 ElevatedButton(
-//                   onPressed: () {
-//                     Provider.of<AuthViewModel>(context, listen: false).logout();
-//                   },
-//                   child: const Text('Cerrar sesión'),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         );
-//       },
-//     );
-//   }
-// }
