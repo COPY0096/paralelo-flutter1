@@ -1,3 +1,4 @@
+// auth_view_model.dart
 import 'package:flutter/material.dart';
 import '../models/user_model.dart';
 
@@ -26,26 +27,3 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
   }
 }
-
-// import 'package:flutter/material.dart';
-// import '../models/user_model.dart';
-
-// class AuthViewModel extends ChangeNotifier {
-//   bool _isLoggedIn = false;
-//   UserModel? _user;
-
-//   bool get isLoggedIn => _isLoggedIn;
-//   UserModel? get user => _user;
-
-//   void login(UserModel usuario) {
-//     _isLoggedIn = true;
-//     _user = usuario;
-//     notifyListeners();
-//   }
-
-//   void logout() {
-//     _isLoggedIn = false;
-//     _user = null;
-//     notifyListeners();
-//   }
-// }

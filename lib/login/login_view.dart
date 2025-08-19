@@ -1,6 +1,7 @@
 // lib/login/login_view.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_paralelo_1/l10n/app_localizations.dart';
+import 'package:flutter_paralelo_1/login/recuperar_clave_view.dart';
 import 'package:provider/provider.dart';
 import 'package:app_links/app_links.dart';
 import 'dart:async';
@@ -143,9 +144,12 @@ class _LoginViewState extends State<LoginView> {
 
                 TextButton(
                   onPressed: () {
-                    // Funcionalidad futura para recuperar contraseña
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => RecuperarClaveView()),
+                    );
                   },
-                  child: Text(localizations.forgotPassword),
+                  child: Text('¿Olvidaste tu contraseña?'),
                 ),
                 const SizedBox(height: 30),
 
