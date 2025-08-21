@@ -13,11 +13,13 @@ const db = connection.promise();
 
 const getUsuarios = async (req, res) => {
   try {
-    const [results] = await db.query('SELECT * FROM usuarios');
-    res.json(results);
-  } catch (err) {
-    console.error('Error al obtener usuarios:', err);
-    res.status(500).json({ error: 'Error al obtener usuarios' });
+    const [rows] = await db.query(
+      "SELECT id, nombre, username, rol, cedula, correo, cargo, salario FROM usuarios"
+    );
+    res.json(rows);
+  } catch (error) {
+    console.error('Error al obtener usuarios:', error);
+    res.status(500).json({ error: error.message });
   }
 };
 

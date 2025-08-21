@@ -21,6 +21,9 @@ const salarioRoutes    = require('./routes/salario.routes');
 const permisoRoutes    = require('./routes/permiso.routes');
 const vacacionesRoutes = require('./routes/vacaciones.routes');
 
+// Importar rutas de empleados
+const empleadoRoutes = require('./routes/empleado.routes');
+
 // Importar rutas de GitHub Auth
 const githubAuthRoutes = require('./routes/githubAuth.routes');
 
@@ -48,6 +51,9 @@ app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/productos', productoRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api', usuariosRoutes); // Esto activa rutas como /api/usuarios/1/cambiar-clave
+
+// Rutas para empleados
+app.use('/api/empleados', empleadoRoutes);
 
 // Nuevas rutas de Recursos Humanos
 app.use('/api/salarios', salarioRoutes);
