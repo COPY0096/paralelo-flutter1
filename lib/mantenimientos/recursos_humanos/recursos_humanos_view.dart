@@ -1,9 +1,12 @@
 // lib/mantenimientos/recursos_humanos/recursos_humanos_view.dart
 
 import 'package:flutter/material.dart';
-import 'salario_view.dart';
+
+import 'acciones_personal_view.dart';
+import 'acciones_personal_service.dart';
+import 'vacaciones_model.dart';
 import 'permiso_view.dart';
-import 'vacaciones_view.dart';
+import 'pago_salario_model.dart';
 // 🔹 Nuevos imports (pantallas que vas a crear)
 import 'empleados_view.dart';
 import 'acciones_personal_view.dart';

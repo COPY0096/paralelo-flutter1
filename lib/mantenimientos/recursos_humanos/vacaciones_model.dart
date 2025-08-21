@@ -1,28 +1,33 @@
 // lib/mantenimientos/recursos_humanos/vacaciones_model.dart
+class Vacacion {
+  final int id;
+  final int empleadoId;
+  final String fechaInicio;
+  final String fechaFin;
+  final int dias;
+  final String? motivo;
+  final String estado;
+  final String? empleado;
 
-class Vacaciones {
-  final int? id;
-  final int usuarioId;
-  final DateTime fechaInicio;
-  final DateTime fechaFin;
-
-  Vacaciones({
-    this.id,
-    required this.usuarioId,
+  Vacacion({
+    required this.id,
+    required this.empleadoId,
     required this.fechaInicio,
     required this.fechaFin,
+    required this.dias,
+    required this.estado,
+    this.motivo,
+    this.empleado,
   });
 
-  factory Vacaciones.fromJson(Map<String, dynamic> json) => Vacaciones(
-        id: json['id'],
-        usuarioId: json['usuario_id'],
-        fechaInicio: DateTime.parse(json['fecha_inicio']),
-        fechaFin: DateTime.parse(json['fecha_fin']),
-      );
-
-  Map<String, dynamic> toJson() => {
-        'usuario_id': usuarioId,
-        'fecha_inicio': fechaInicio.toIso8601String(),
-        'fecha_fin': fechaFin.toIso8601String(),
-      };
+  factory Vacacion.fromJson(Map<String, dynamic> json) => Vacacion(
+    id: json['id'],
+    empleadoId: json['empleado_id'],
+    fechaInicio: json['fecha_inicio'],
+    fechaFin: json['fecha_fin'],
+    dias: json['dias'],
+    estado: json['estado'],
+    motivo: json['motivo'],
+    empleado: json['empleado'],
+  );
 }

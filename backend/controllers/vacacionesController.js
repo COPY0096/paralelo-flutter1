@@ -1,118 +1,77 @@
 // backend/controllers/vacacionesController.js
+const mysql = require('mysql2/promise');
 
-const mysql = require('mysql2');
-const connection = mysql.createConnection({
+const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password: '0096',
-  database: 'flutter1'
+  database: 'flutter1',
+  waitForConnections: true,
+  connectionLimit: 10
 });
 
-/**
- * GET /api/vacaciones
- * Opcional query param: ?usuario_id=#
- */
-const getVacaciones = (req, res) => {
-  const { usuario_id } = req.query;
-  let sql = 'SELECT * FROM vacaciones';
-  const params = [];
+// GET /api/vacaciones?empleado_id=#
+async function getVacaciones(req, res) {
+  try {
+    const { empleado_id } = req.query;
+    let sql = `
+      SELECT v.*, e.nombre AS empleado
+      FROM vacaciones v
+      JOIN empleados e ON e.id = v.empleado_id
+      ORDER BY v.creado_en DESC
+    `;
+    const params = [];
 
-  if (usuario_id) {
-    sql += ' WHERE usuario_id = ?';
-    params.push(usuario_id);
+    if (empleado_id) {
+      sql = `
+        SELECT v.*, e.nombre AS empleado
+        FROM vacaciones v
+        JOIN empleados e ON e.id = v.empleado_id
+        WHERE v.empleado_id = ?
+        ORDER BY v.creado_en DESC
+      `;
+      params.push(empleado_id);
+    }
+
+    const [rows] = await pool.query(sql, params);
+    res.json(rows);
+  } catch (err) {
+    console.error('getVacaciones error:', err);
+    res.status(500).json({ error: 'Error al obtener vacaciones' });
   }
+}
 
-  connection.query(sql, params, (err, results) => {
-    if (err) {
-      console.error('DB error fetching vacaciones:', err);
-      return res.status(500).json({ error: 'Error al obtener vacaciones' });
+// POST /api/vacaciones
+// body: { empleado_id, fecha_inicio (YYYY-MM-DD), fecha_fin (YYYY-MM-DD), motivo?, estado? }
+async function createVacacion(req, res) {
+  try {
+    const { empleado_id, fecha_inicio, fecha_fin, motivo, estado } = req.body;
+
+    if (!empleado_id || !fecha_inicio || !fecha_fin) {
+      return res.status(400).json({ mensaje: 'empleado_id, fecha_inicio y fecha_fin son requeridos' });
     }
-    res.json(results);
-  });
-};
 
-/**
- * POST /api/vacaciones
- * body: { usuario_id, fecha_inicio, fecha_fin, dias_aprobados?, comentario? }
- */
-const createVacacion = (req, res) => {
-  const { usuario_id, fecha_inicio, fecha_fin, dias_aprobados, comentario } = req.body;
-  const sql = `
-    INSERT INTO vacaciones
-      (usuario_id, fecha_inicio, fecha_fin, dias_aprobados, comentario)
-    VALUES (?, ?, ?, ?, ?)
-  `;
-  connection.query(
-    sql,
-    [usuario_id, fecha_inicio, fecha_fin, dias_aprobados || 0, comentario || null],
-    (err, result) => {
-      if (err) {
-        console.error('DB error creating vacacion:', err);
-        return res.status(500).json({ error: 'Error al crear solicitud de vacaciones' });
-      }
-      res.json({
-        id: result.insertId,
-        usuario_id,
-        fecha_inicio,
-        fecha_fin,
-        dias_aprobados: dias_aprobados || 0,
-        comentario: comentario || null,
-        estado: 'solicitada'
-      });
-    }
-  );
-};
+    const [emp] = await pool.query('SELECT id FROM empleados WHERE id = ?', [empleado_id]);
+    if (emp.length === 0) return res.status(404).json({ mensaje: 'Empleado no encontrado' });
 
-/**
- * PUT /api/vacaciones/:id
- * body: { fecha_inicio?, fecha_fin?, dias_aprobados?, comentario?, estado? }
- */
-const updateVacacion = (req, res) => {
-  const { id } = req.params;
-  const { fecha_inicio, fecha_fin, dias_aprobados, comentario, estado } = req.body;
-  const sql = `
-    UPDATE vacaciones
-    SET fecha_inicio = ?, fecha_fin = ?, dias_aprobados = ?, comentario = ?, estado = ?
-    WHERE id = ?
-  `;
-  connection.query(
-    sql,
-    [fecha_inicio, fecha_fin, dias_aprobados, comentario, estado, id],
-    (err) => {
-      if (err) {
-        console.error('DB error updating vacacion:', err);
-        return res.status(500).json({ error: 'Error al actualizar solicitud de vacaciones' });
-      }
-      res.json({
-        id: Number(id),
-        fecha_inicio,
-        fecha_fin,
-        dias_aprobados,
-        comentario,
-        estado
-      });
-    }
-  );
-};
+    const [r] = await pool.query(
+      `INSERT INTO vacaciones (empleado_id, fecha_inicio, fecha_fin, dias, motivo, estado)
+       VALUES (?, ?, ?, DATEDIFF(?, ?)+1, ?, ?)`,
+      [empleado_id, fecha_inicio, fecha_fin, fecha_fin, fecha_inicio, motivo || null, estado || 'aprobada']
+    );
 
-/**
- * DELETE /api/vacaciones/:id
- */
-const deleteVacacion = (req, res) => {
-  const { id } = req.params;
-  const sql = 'DELETE FROM vacaciones WHERE id = ?';
-  connection.query(sql, [id], (err) => {
-    if (err) {
-      console.error('DB error deleting vacacion:', err);
-      return res.status(500).json({ error: 'Error al eliminar solicitud de vacaciones' });
-    }
-    res.json({ success: true });
-  });
-};
+    res.status(201).json({
+      id: r.insertId,
+      empleado_id,
+      fecha_inicio,
+      fecha_fin,
+      motivo: motivo || null,
+      estado: estado || 'aprobada'
+    });
+  } catch (err) {
+    console.error('createVacacion error:', err);
+    res.status(500).json({ error: 'Error al crear vacación' });
+  }
+}
 
-module.exports = {
-  getVacaciones,
-  createVacacion,
-  updateVacacion,
-  deleteVacacion
-};
+module.exports = { getVacaciones, createVacacion };
