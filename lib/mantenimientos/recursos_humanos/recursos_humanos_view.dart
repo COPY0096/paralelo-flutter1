@@ -16,7 +16,7 @@ class RecursosHumanosView extends StatelessWidget {
   Widget build(BuildContext context) {
     final opciones = [
       {
-        'titulo': 'Ver Empleados',
+        'titulo': 'Empleados',
         'icono': Icons.people,
         'color': Colors.blue,
         'vista': const EmpleadosView(),
@@ -27,30 +27,7 @@ class RecursosHumanosView extends StatelessWidget {
         'color': Colors.green,
         'vista': const AccionesPersonalView(),
       },
-      {
-        'titulo': 'Agregar Empleado',
-        'icono': Icons.person_add,
-        'color': Colors.orange,
-        'vista': const AgregarEmpleadoView(),
-      },
-      {
-        'titulo': 'Salarios',
-        'icono': Icons.attach_money,
-        'color': Colors.teal,
-        'vista': const SalarioView(),
-      },
-      {
-        'titulo': 'Permisos',
-        'icono': Icons.calendar_month,
-        'color': Colors.purple,
-        'vista': const PermisoView(),
-      },
-      {
-        'titulo': 'Vacaciones',
-        'icono': Icons.beach_access,
-        'color': Colors.red,
-        'vista': const VacacionesView(),
-      },
+
     ];
 
     return Scaffold(

@@ -1,3 +1,4 @@
+//lib/productos/productos_view_model.dart
 import 'package:flutter/material.dart';
 import 'producto.dart';
 import 'producto_service.dart';

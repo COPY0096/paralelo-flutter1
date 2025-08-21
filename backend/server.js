@@ -68,4 +68,11 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
   console.log(`Servidor en http://localhost:${PORT}`);
+  console.log(`Rutas disponibles:`);
+  console.log(`  - GET  /api/productos`);
+  console.log(`  - GET  /api/productos/:id`);
+  console.log(`  - POST /api/productos`);
+  console.log(`  - PUT  /api/productos/:id`);
+  console.log(`  - DELETE /api/productos/:id`);
+  console.log(`  - POST /api/productos/:id/vender`);
 });

@@ -88,7 +88,7 @@ class HomeView extends StatelessWidget {
                       _buildDashboardCard(
                         context,
                         icon: Icons.group,
-                        label: localizations.users,
+                        label: "Mantenimientos",
                         color: Colors.orange,
                         route: '/mantenimientos',
                       ),
